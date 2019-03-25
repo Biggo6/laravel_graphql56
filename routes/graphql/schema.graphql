@@ -1,0 +1,49 @@
+scalar DateTime
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type Query @group(middleware: ["jwt.auth"]) {
+    posts: [Post] @all
+    post(id: Int! @eq): Post @find
+    users: [User] @all
+    user(id: Int! @eq): User @find
+    latestUser: User @auth
+    hello: String!
+}
+
+input AuthData {
+    email: String!
+    password: String!
+}
+
+type LoginPayload {
+    auth_token: String
+    user: User
+}
+
+type Mutation {
+    authUser(input: AuthData!): LoginPayload
+    createUser(input: AuthData): LoginPayload
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+    posts: [Post] @hasMany
+}
+
+type Post {
+    id: ID!
+    title: String!
+    content: String!
+    user: User! @belongsTo
+    comments: [Comment] @hasMany
+}
+
+type Comment {
+    id: ID!
+    reply: String!
+    post: Post! @belongsTo
+}
